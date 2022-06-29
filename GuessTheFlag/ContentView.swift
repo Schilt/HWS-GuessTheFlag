@@ -9,7 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var showingScore = false
+    @State private var showingGameOver = false
     @State private var scoreTitle = ""
+    @State private var gameOverTitle = ""
+    @State private var score = 0
+    @State private var numberOfQuestions = 0
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -20,11 +24,15 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 30) {
+                Spacer()
                 VStack{
                     Text("Tap the flag of")
                         .foregroundColor(.white)
+                        .font(.subheadline.weight(.heavy))
+                    
                     Text(countries[correctAnswer])
                         .foregroundColor(.white)
+                        .font(.largeTitle.weight(.semibold))
                 }
                 ForEach(0..<3) { number in
                     Button {
@@ -32,25 +40,57 @@ struct ContentView: View {
                     } label: {
                         Image(countries[number])
                             .renderingMode(.original)
+                            .clipShape(Capsule())
+                            .shadow(radius: 5)
                     }
+                }
+                VStack {
+                    Spacer()
+                    Text("Score: \(score)/\(numberOfQuestions)")
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
                 }
             }
         }
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
-        } message: {
-            Text("Your score is ???")
+        } message:  {
+            Text("Your score is \(score)/\(numberOfQuestions)")
         }
+        
+        .alert(gameOverTitle, isPresented: $showingGameOver) {
+            Button() {
+                numberOfQuestions = 0
+                score = 0
+                askQuestion()
+            } label: {
+                Text("Would you like to play again?")
+            }
+        }
+
     }
     
     func flagTapped(_ number: Int) {
+        numberOfQuestions += 1
         if number == correctAnswer {
             scoreTitle = "Correct"
+            score += 1
         } else {
-            scoreTitle = "Wrong"
+            scoreTitle = "Wrong! That's the flag of \(countries[number])."
         }
-
         showingScore = true
+        
+        if numberOfQuestions >= 8 {
+            gameOverTitle = "Game Over!\nRating: "
+            switch score {
+            case 0,1 : gameOverTitle += "poor"
+            case 2,3 : gameOverTitle += "ok"
+            case 4,5 : gameOverTitle += "good"
+            case 6 : gameOverTitle += "excellent!"
+            default:   gameOverTitle += "CHEATER!"
+            }
+            showingGameOver = true
+        }
     }
     
     func askQuestion() {
