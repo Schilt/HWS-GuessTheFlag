@@ -14,8 +14,8 @@ struct ContentView: View {
     @State private var gameOverTitle = ""
     @State private var score = 0
     @State private var numberOfQuestions = 0
-    
-    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
+    @State private var countries = initialCountries.shuffled()
+    static let initialCountries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"]
     @State private var correctAnswer = Int.random(in: 0...2)
     
     var body: some View {
@@ -62,7 +62,8 @@ struct ContentView: View {
             Button() {
                 numberOfQuestions = 0
                 score = 0
-                askQuestion()
+                countries = ContentView.initialCountries.shuffled()
+                correctAnswer = Int.random(in: 0...2)
             } label: {
                 Text("Would you like to play again?")
             }
@@ -81,6 +82,7 @@ struct ContentView: View {
     }
     
     func askQuestion() {
+        countries.remove(at: correctAnswer)
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
         
