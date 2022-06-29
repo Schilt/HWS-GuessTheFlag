@@ -67,18 +67,22 @@ struct ContentView: View {
                 Text("Would you like to play again?")
             }
         }
-
     }
     
     func flagTapped(_ number: Int) {
-        numberOfQuestions += 1
         if number == correctAnswer {
             scoreTitle = "Correct"
             score += 1
         } else {
             scoreTitle = "Wrong! That's the flag of \(countries[number])."
         }
+        numberOfQuestions += 1
         showingScore = true
+    }
+    
+    func askQuestion() {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
         
         if numberOfQuestions >= 8 {
             gameOverTitle = "Game Over!\nRating: "
@@ -86,16 +90,12 @@ struct ContentView: View {
             case 0,1 : gameOverTitle += "poor"
             case 2,3 : gameOverTitle += "ok"
             case 4,5 : gameOverTitle += "good"
-            case 6 : gameOverTitle += "excellent!"
+            case 6,7 : gameOverTitle += "excellent!"
+            case 8:    gameOverTitle += "Perfect!"
             default:   gameOverTitle += "CHEATER!"
             }
             showingGameOver = true
         }
-    }
-    
-    func askQuestion() {
-        countries.shuffle()
-        correctAnswer = Int.random(in: 0...2)
     }
 }
 
